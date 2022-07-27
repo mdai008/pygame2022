@@ -8,6 +8,7 @@ WIN_WIDTH, WIN_HEIGHT = 800, 640
 TILE_SIZE = 16 
 FPS = 60
 PLAYER_LAYER = 1 
+PLAYER_SPEED = 3
 RED = (255, 0, 0) 
 BLACK = (0, 0, 0) 
 
@@ -32,6 +33,28 @@ class player(pg.sprite.Sprite):
         self.rect.x = self._x 
         self.rect.y = self._y 
 
-    def update(self):
-        pass
+        self._xChange = 0 
+        self._yChange = 0 
+        self._facing = "down" 
+
+    def update(self): #update character position
+        self.movement() 
+        self.rect.x += self._xChange 
+        self.rect.y += self._yChange 
+        self._xChange = 0 
+        self._yChange = 0 
         
+    def movement(self): #player movement
+        keys = pg.key.get_pressed() 
+        if keys[pg.K_a]: 
+            self._xChange -= PLAYER_SPEED 
+            self._facing = "left" 
+        if keys[pg.K_d]: 
+            self._xChange += PLAYER_SPEED 
+            self._facing = "right" 
+        if keys[pg.K_w]: 
+            self._yChange -= PLAYER_SPEED 
+            self._facing = "up" 
+        if keys[pg.K_s]: 
+            self._yChange += PLAYER_SPEED 
+            self._facing = "down" 
