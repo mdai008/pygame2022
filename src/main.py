@@ -9,13 +9,21 @@ class game:
         # self._font = pg.font.Font("Arial", 32) 
         self.isRunning = True 
 
+    def createMap(self): #create tile map 
+        for i, row in enumerate(tileMap): 
+            for j, column in enumerate(row): 
+                if column == "X": 
+                    wall(self, j, i) 
+                if column == "P": 
+                    player(self, j, i) 
+
     def newGame(self): #initializes variables when game starts
         self._isPlaying = True 
         self.allSprites = pg.sprite.LayeredUpdates() 
-        self._walls = pg.sprite.LayeredUpdates() 
-        self._enemies = pg.sprite.LayeredUpdates() 
+        self.walls = pg.sprite.LayeredUpdates() 
+        self.enemies = pg.sprite.LayeredUpdates() 
         self._attacks = pg.sprite.LayeredUpdates() 
-        self._player = player(self, 1, 2) 
+        self.createMap() 
 
     def events(self): #key inputs
         for event in pg.event.get(): 
