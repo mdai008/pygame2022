@@ -7,14 +7,26 @@ import random
 WIN_WIDTH, WIN_HEIGHT = 800, 640 
 TILE_SIZE = 32 
 FPS = 60
-PLAYER_LAYER = 2 
-WALL_LAYER = 1
+PLAYER_LAYER = 3 
+WALL_LAYER = 2
+GROUND_LAYER = 1
 PLAYER_SPEED = 3
 RED = (255, 0, 0) 
 GREEN = (0, 255, 0) 
 BLUE = (0, 0, 255) 
 BLACK = (0, 0, 0) 
+WHITE = (255, 255, 255) 
+GRAY = (128, 128, 128)
 
+# class spriteSheet: #class for a sprite sheet
+#     def __init__(self, file):
+#         self._sheet = pg.image.load(file).convert() 
+
+#     def getSprite(self, x, y, width, height): 
+#         sprite = pg.Surface([width, height]) 
+#         sprite.set_colorkey(BLACK) 
+#         sprite.blit(self._sheet, (0,0), (x, y, width, height)) 
+#         return sprite
 
 #player class
 class player(pg.sprite.Sprite): 
@@ -31,6 +43,7 @@ class player(pg.sprite.Sprite):
 
         self.image = pg.Surface([self._width, self._height]) 
         self.image.fill(BLUE) 
+        # self.image = self._game.characterSheet.getSprite(x, y, self._width, self._height)
         
         self.rect = self.image.get_rect() 
         self.rect.x = self._x 
@@ -62,7 +75,7 @@ class player(pg.sprite.Sprite):
             self._yChange += PLAYER_SPEED 
             self._facing = "down" 
 
-    #wall class
+#wall class
 class wall(pg.sprite.Sprite): 
     def __init__(self, g, x, y):
         self._game = g 
@@ -77,13 +90,32 @@ class wall(pg.sprite.Sprite):
 
         self.image = pg.Surface([self._width, self._height]) 
         self.image.fill(GREEN) 
+        # self.image = self._game.terrainSheet.getSprite(x, y, width, height)
 
         self.rect = self.image.get_rect() 
         self.rect.x = self._x 
         self.rect.y = self._y 
 
+#ground class
+class ground(pg.sprite.Sprite): 
+    def __init__(self, g, x, y):
+        self._game = g 
+        self._layer = GROUND_LAYER 
+        self._groups = self._game.allSprites 
+        pg.sprite.Sprite.__init__(self, self._groups) 
 
+        self._width = TILE_SIZE 
+        self._height = TILE_SIZE 
+        self._x = x * TILE_SIZE 
+        self._y = y * TILE_SIZE 
 
+        self.image = pg.Surface([self._width, self._height]) 
+        self.image.fill(GRAY) 
+        # self.image = self._game.terrainSheet.getSprite(x, y, width, height) 
+
+        self.rect = self.image.get_rect() 
+        self.rect.x = self._x 
+        self.rect.y = self._y 
 
 
 

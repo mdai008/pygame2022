@@ -9,9 +9,13 @@ class game:
         # self._font = pg.font.Font("Arial", 32) 
         self.isRunning = True 
 
+        # self.characterSheet = spriteSheet("sheetLoc") 
+        # self.terrainSheet = spriteSheet("sheetLoc") 
+
     def createMap(self): #create tile map 
         for i, row in enumerate(tileMap): 
             for j, column in enumerate(row): 
+                ground(self, j, i)
                 if column == "X": 
                     wall(self, j, i) 
                 if column == "P": 
