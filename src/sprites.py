@@ -16,7 +16,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255) 
 BLACK = (0, 0, 0) 
 WHITE = (255, 255, 255) 
-GRAY = (128, 128, 128)
+GRAY = (127, 127, 127)
 
 # class spriteSheet: #class for a sprite sheet
 #     def __init__(self, file):
@@ -56,7 +56,9 @@ class player(pg.sprite.Sprite):
     def update(self): #update character position
         self.movement() 
         self.rect.x += self._xChange 
-        self.rect.y += self._yChange 
+        self.wallCollision("x")
+        self.rect.y += self._yChange
+        self.wallCollision("y") 
         self._xChange = 0 
         self._yChange = 0 
         
@@ -74,6 +76,22 @@ class player(pg.sprite.Sprite):
         if keys[pg.K_s]: 
             self._yChange += PLAYER_SPEED 
             self._facing = "down" 
+
+    def wallCollision(self, direction): #collision detection
+        if direction == "x": 
+            isHit = pg.sprite.spritecollide(self, self._game.walls, False) 
+            if isHit: 
+                if self._xChange > 0: 
+                    self.rect.x = isHit[0].rect.left - self.rect.width 
+                if self._xChange < 0: 
+                    self.rect.x = isHit[0].rect.right 
+        if direction == "y": 
+            isHit = pg.sprite.spritecollide(self, self._game.walls, False) 
+            if isHit: 
+                if self._yChange > 0: 
+                    self.rect.y = isHit[0].rect.top - self.rect.height 
+                if self._yChange < 0: 
+                    self.rect.y = isHit[0].rect.bottom 
 
 #wall class
 class wall(pg.sprite.Sprite): 
