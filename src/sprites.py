@@ -52,9 +52,17 @@ class player(pg.sprite.Sprite):
         self._xChange = 0 
         self._yChange = 0 
         self._facing = "down" 
+        # self._animationDict = {
+        # "leftAni": [self._game.characterSheet.getSprite(x, y, self._width, self._height), ],
+        # "rightAni": [self._game.characterSheet.getSprite(x, y, self._width, self._height), ],
+        # "upAni": [self._game.characterSheet.getSprite(x, y, self._width, self._height), ],
+        # "downAni": [self._game.characterSheet.getSprite(x, y, self._width, self._height), ]
+        # }
+        # self._animationLoop = 1 
 
     def update(self): #update character position
         self.movement() 
+        # self.animateSprite() 
         self.rect.x += self._xChange 
         self.wallCollision("x")
         self.rect.y += self._yChange
@@ -92,6 +100,44 @@ class player(pg.sprite.Sprite):
                     self.rect.y = isHit[0].rect.top - self.rect.height 
                 if self._yChange < 0: 
                     self.rect.y = isHit[0].rect.bottom 
+
+    # def animateSprite(self): #animate sprite
+    #     leftAni = [self._game.characterSheet.getSprite(x, y, self._width, self._height)] 
+    #     rightAni = [self._game.characterSheet.getSprite(x, y, self._width, self._height)] 
+    #     upAni = [self._game.characterSheet.getSprite(x, y, self._width, self._height)] 
+    #     downAni = [self._game.characterSheet.getSprite(x, y, self._width, self._height)] 
+    #     if self._facing == "left":
+    #         if self._xChange == 0: 
+    #             self.image = leftAni[0] 
+    #         else: 
+    #             self.image = leftAni[math.floor(self._animationLoop)] 
+    #             self._animationLoop += 0.1 
+    #             if self._animationLoop >= 3: 
+    #                 self._animationLoop = 1
+    #     if self._facing == "right":
+    #         if self._xChange == 0: 
+    #             self.image = rightAni[0] 
+    #         else: 
+    #             self.image = rightAni[math.floor(self._animationLoop)] 
+    #             self._animationLoop += 0.1 
+    #             if self._animationLoop >= 3: 
+    #                 self._animationLoop = 1
+    #     if self._facing == "up":
+    #         if self._yChange == 0: 
+    #             self.image = upAni[0] 
+    #         else: 
+    #             self.image = upAni[math.floor(self._animationLoop)] 
+    #             self._animationLoop += 0.1 
+    #             if self._animationLoop >= 3: 
+    #                 self._animationLoop = 1
+    #     if self._facing == "down":
+    #         if self._yChange == 0: 
+    #             self.image = downAni[0] 
+    #         else: 
+    #             self.image = downAni[math.floor(self._animationLoop)] 
+    #             self._animationLoop += 0.1 
+    #             if self._animationLoop >= 3: 
+    #                 self._animationLoop = 1
 
 #wall class
 class wall(pg.sprite.Sprite): 
@@ -146,18 +192,18 @@ class ground(pg.sprite.Sprite):
 tileMap = [
     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     "X................................................X",    
-    "X..P.............................................X",
-    "X................................................X",
-    "X....XXXX........................................X",
-    "X................................................X",
-    "X..........X.....................................X",
-    "X..........X.....................................X",
-    "X..........X.....................................X",
-    "X................................................X",
-    "X................................................X",
+    "X..P.........X...................................X",
+    "X............X...................................X",
+    "X....XXXX....X...................................X",
+    "X....X...........................................X",
+    "X....X.....X.....................................X",
+    "X....X.....X.....................................X",
+    "X....XXXXXXX.....................................X",
     "X................................................X",
     "X................................................X",
-    "X................................................X",
+    "X.......X........................................X",
+    "X........X.......................................X",
+    "X.........X......................................X",
     "X...........XXXXX................................X",
     "X................................................X",
     "X................................................X",
