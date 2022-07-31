@@ -4,7 +4,7 @@ import math
 import random
 
 #variables
-WIN_WIDTH, WIN_HEIGHT = 800, 640 
+WIN_WIDTH, WIN_HEIGHT = 800, 672 
 TILE_SIZE = 32 
 FPS = 60
 PLAYER_LAYER = 4 
@@ -76,15 +76,23 @@ class player(pg.sprite.Sprite):
     def movement(self): #player movement
         keys = pg.key.get_pressed() 
         if keys[pg.K_a]: 
+            for sprite in self._game.allSprites: 
+                sprite.rect.x += PLAYER_SPEED
             self._xChange -= PLAYER_SPEED 
             self._facing = "left" 
         if keys[pg.K_d]: 
+            for sprite in self._game.allSprites: 
+                sprite.rect.x -= PLAYER_SPEED
             self._xChange += PLAYER_SPEED 
             self._facing = "right" 
         if keys[pg.K_w]: 
+            for sprite in self._game.allSprites: 
+                sprite.rect.y += PLAYER_SPEED
             self._yChange -= PLAYER_SPEED 
             self._facing = "up" 
         if keys[pg.K_s]: 
+            for sprite in self._game.allSprites: 
+                sprite.rect.y -= PLAYER_SPEED
             self._yChange += PLAYER_SPEED 
             self._facing = "down" 
 
@@ -94,15 +102,23 @@ class player(pg.sprite.Sprite):
             if isHit: 
                 if self._xChange > 0: 
                     self.rect.x = isHit[0].rect.left - self.rect.width 
+                    for sprite in self._game.allSprites: 
+                        sprite.rect.x += PLAYER_SPEED
                 if self._xChange < 0: 
                     self.rect.x = isHit[0].rect.right 
+                    for sprite in self._game.allSprites: 
+                        sprite.rect.x -= PLAYER_SPEED
         if direction == "y": 
             isHit = pg.sprite.spritecollide(self, self._game.walls, False) 
             if isHit: 
                 if self._yChange > 0: 
                     self.rect.y = isHit[0].rect.top - self.rect.height 
+                    for sprite in self._game.allSprites: 
+                        sprite.rect.y += PLAYER_SPEED
                 if self._yChange < 0: 
                     self.rect.y = isHit[0].rect.bottom 
+                    for sprite in self._game.allSprites: 
+                        sprite.rect.y -= PLAYER_SPEED
 
     # def animateSprite(self): #animate sprite
     #     leftAni = [self._game.characterSheet.getSprite(x, y, self._width, self._height)] 
@@ -319,23 +335,24 @@ class ground(pg.sprite.Sprite):
 tileMap = [
     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     "X................................................X",    
-    "X..P.........X...................................X",
-    "X............X...................................X",
-    "X....XXXX....X...................................X",
-    "X....X...........................................X",
-    "X....X.....X.....................................X",
-    "X....X.E...X.....................................X",
-    "X....XXXXXXX.....................................X",
-    "X................................................X",
-    "X................................................X",
-    "X.......X........................................X",
-    "X........X.......................................X",
-    "X.........X...E..................................X",
-    "X...........XXXXX................................X",
-    "X.....E..........................................X",
-    "X................................................X",
-    "X................................................X",
-    "X................................................X",
-    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-]
+    "X..E.........X...........................E.......X",
+    "X............X...................X.X.............X",
+    "X....XXXX....X..................X....XX.....XXX..X",
+    "X....X..........................X.E..X.....X..X..X",
+    "X....X.....X.....................XXX..X...X...X..X",
+    "X....X.E...X.......................X..X..X....X..X",
+    "X....XXXXXXX..........X............X..X..X....X..X",
+    "X...................................E.X..X.E..X..X",
+    "X...........P.......X...X..........XXX...........X",
+    "X.......X..............E.........................X",
+    "X........X............X..........................X",
+    "X.........X...........................XXX........XXXXXXXXXXXXXXXXXXXXX",
+    "X...........XXXXX.....E..............................................X",
+    "X.....E.......................X............E.........................XX",
+    "X..........X..E...............X........................................XX",
+    "X..........X..................X........E.................................X",
+    "X..........X......E...........X...........................................XXX",
+    "X............................................................................X",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+] 
 
