@@ -10,7 +10,8 @@ class game:
         self.isRunning = True 
 
         # self.characterSheet = spriteSheet("sheetLoc") 
-        # self.terrainSheet = spriteSheet("sheetLoc") 
+        # self.terrainSheet = spriteSheet("sheetLoc")
+        # self.enemySheet = spriteSheet("sheetLoc")  
 
     def createMap(self): #create tile map 
         for i, row in enumerate(tileMap): 
@@ -20,6 +21,8 @@ class game:
                     wall(self, j, i) 
                 if column == "P": 
                     player(self, j, i) 
+                if column == "E": 
+                    enemy(self, j, i) 
 
     def newGame(self): #initializes variables when game starts
         self._isPlaying = True 
