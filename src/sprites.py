@@ -8,15 +8,21 @@ WIN_WIDTH, WIN_HEIGHT = 800, 672
 TILE_SIZE = 32 
 FPS = 60
 PLAYER_LAYER = 4 
+ATTACK_LAYER = 3
 ENEMY_LAYER = 3
 WALL_LAYER = 2
 GROUND_LAYER = 1
-PLAYER_SPEED = 2
+PLAYER_SPEED = 1
 ENEMY_SPEED = 1 
 MOVEMENT_INC = 1
+ATTACK_SIZE = 16 
+PROJ_DIST = 30 
+PROJ_SPEED = 2
 RED = (255, 0, 0) 
 GREEN = (0, 255, 0) 
 BLUE = (0, 0, 255) 
+PURPLE = (127, 0, 127) 
+ORANGE = (127, 127, 0)
 BLACK = (0, 0, 0) 
 WHITE = (255, 255, 255) 
 GRAY = (127, 127, 127)
@@ -324,6 +330,65 @@ class ground(pg.sprite.Sprite):
         self.rect.x = self._x 
         self.rect.y = self._y 
 
+#player attack class
+class playerAttack(pg.sprite.Sprite): 
+    def __init__(self, g, x, y):
+        self._game = g 
+        self._layer = ATTACK_LAYER 
+        self._groups = self._game.allSprites, self._game.attacks 
+        pg.sprite.Sprite.__init__(self, self._groups) 
+
+        self._width = ATTACK_SIZE 
+        self._height = ATTACK_SIZE 
+        self._x = x 
+        self._y = y 
+
+        self.image = pg.Surface([self._width, self._height]) 
+        self.image.fill(PURPLE) 
+        # self.image = self._game.attackSheet.getSprite(x, y, width, height) 
+
+        self.rect = self.image.get_rect() 
+        self.rect.x = self._x 
+        self.rect.y = self._y 
+
+        self._xChange = 0 
+        self._yChange = 0 
+        self._movementLoop = 0 
+        self._maxDist = PROJ_DIST 
+        self._facing = self._game.player._facing 
+
+    def update(self): #update attack position
+        self.movement() 
+        self.rect.x += self._xChange 
+        self.rect.y += self._yChange 
+        self._xChange = 0 
+        self._yChange = 0 
+
+    def movement(self): #how the projectile moves
+        enemyHit = pg.sprite.spritecollide(self, self._game.enemies, True) 
+        wallHit = pg.sprite.spritecollide(self, self._game.walls, False) 
+        isHit = enemyHit or wallHit 
+        if self._facing == "left": 
+            self._xChange -= PROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+        if self._facing == "right": 
+            self._xChange += PROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+        if self._facing == "up": 
+            self._yChange -= PROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+        if self._facing == "down": 
+            self._yChange += PROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+            
 
 
 

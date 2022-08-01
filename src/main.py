@@ -12,6 +12,7 @@ class game:
         # self.characterSheet = spriteSheet("sheetLoc") 
         # self.terrainSheet = spriteSheet("sheetLoc")
         # self.enemySheet = spriteSheet("sheetLoc")  
+        # self.attackSheet = spriteSheet("sheetLoc")
 
     def createMap(self): #create tile map 
         for i, row in enumerate(tileMap): 
@@ -20,7 +21,7 @@ class game:
                 if column == "X": 
                     wall(self, j, i) 
                 if column == "P": 
-                    player(self, j, i) 
+                    self.player = player(self, j, i) 
                 if column == "E": 
                     enemy(self, j, i) 
 
@@ -29,7 +30,7 @@ class game:
         self.allSprites = pg.sprite.LayeredUpdates() 
         self.walls = pg.sprite.LayeredUpdates() 
         self.enemies = pg.sprite.LayeredUpdates() 
-        self._attacks = pg.sprite.LayeredUpdates() 
+        self.attacks = pg.sprite.LayeredUpdates() 
         self.createMap() 
 
     def events(self): #key inputs
@@ -37,6 +38,11 @@ class game:
             if event.type == pg.QUIT: 
                 self._isPlaying = False
                 self.isRunning = False
+            if event.type == pg.KEYDOWN: 
+                if event.key == pg.K_SPACE: 
+                    xPos = self.player.rect.x + (TILE_SIZE / 2) - (ATTACK_SIZE / 2) 
+                    yPos = self.player.rect.y + (TILE_SIZE / 2) - (ATTACK_SIZE / 2) 
+                    playerAttack(self, xPos, yPos)
 
     def update(self): #update game variables
         self.allSprites.update() 
