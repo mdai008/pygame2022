@@ -24,13 +24,17 @@ class game:
                     self.player = player(self, j, i) 
                 if column == "E": 
                     enemy(self, j, i) 
+                # if column == "D": 
+                #     destructibleWall(self, j, i) 
 
     def newGame(self): #initializes variables when game starts
         self._isPlaying = True 
         self.allSprites = pg.sprite.LayeredUpdates() 
         self.walls = pg.sprite.LayeredUpdates() 
+        self.destructibleWalls = pg.sprite.LayeredUpdates()
         self.enemies = pg.sprite.LayeredUpdates() 
         self.attacks = pg.sprite.LayeredUpdates() 
+        self.players = pg.sprite.LayeredUpdates()
         self.createMap() 
 
     def events(self): #key inputs
@@ -43,6 +47,10 @@ class game:
                     xPos = self.player.rect.x + (TILE_SIZE / 2) - (ATTACK_SIZE / 2) 
                     yPos = self.player.rect.y + (TILE_SIZE / 2) - (ATTACK_SIZE / 2) 
                     playerAttack(self, xPos, yPos)
+            if event.type == pg.KEYDOWN: 
+                if event.key == pg.K_r: 
+                    g.newGame()
+                    g.main()
 
     def update(self): #update game variables
         self.allSprites.update() 

@@ -8,21 +8,23 @@ WIN_WIDTH, WIN_HEIGHT = 800, 672
 TILE_SIZE = 32 
 FPS = 60
 PLAYER_LAYER = 4 
-ATTACK_LAYER = 3
+ATTACK_LAYER = 2
 ENEMY_LAYER = 3
 WALL_LAYER = 2
 GROUND_LAYER = 1
-PLAYER_SPEED = 1
+PLAYER_SPEED = 2
 ENEMY_SPEED = 1 
 MOVEMENT_INC = 1
 ATTACK_SIZE = 16 
-PROJ_DIST = 30 
-PROJ_SPEED = 2
+PPROJ_DIST = 50 
+EPROJ_DIST = 30 
+PPROJ_SPEED = 3 
+EPROJ_SPEED = 2
 RED = (255, 0, 0) 
 GREEN = (0, 255, 0) 
 BLUE = (0, 0, 255) 
 PURPLE = (127, 0, 127) 
-ORANGE = (127, 127, 0)
+ORANGE = (255, 127, 0)
 BLACK = (0, 0, 0) 
 WHITE = (255, 255, 255) 
 GRAY = (127, 127, 127)
@@ -42,7 +44,7 @@ class player(pg.sprite.Sprite):
     def __init__ (self, g, x, y):
         self._game = g 
         self._layer = PLAYER_LAYER 
-        self._groups = self._game.allSprites 
+        self._groups = self._game.allSprites, self._game.players
         pg.sprite.Sprite.__init__(self, self._groups)
 
         self._width = TILE_SIZE 
@@ -189,6 +191,7 @@ class enemy(pg.sprite.Sprite):
         self._yChange = 0 
         self._facing = random.choice(["left", "right", "up", "down"]) 
         self._movementLoop = 0 
+        self._attackLoop = 0
         self._maxDist = random.randint(10,20) 
         # self._animationDict = {
         # "leftAni": [self._game.enemySheet.getSprite(x, y, self._width, self._height), ],
@@ -229,6 +232,15 @@ class enemy(pg.sprite.Sprite):
             self._movementLoop += MOVEMENT_INC 
             if self._movementLoop >= self._maxDist: 
                 self._facing = random.choice(["left", "right", "up", "down"]) 
+        self._attackLoop += 1 
+        if self._attackLoop >= 30:
+            xPos = self.rect.x + (TILE_SIZE / 2) - (ATTACK_SIZE / 2) 
+            yPos = self.rect.y + (TILE_SIZE / 2) - (ATTACK_SIZE / 2) 
+            enemyAttack(self._game, xPos, yPos, "left") 
+            enemyAttack(self._game, xPos, yPos, "right") 
+            enemyAttack(self._game, xPos, yPos, "up") 
+            enemyAttack(self._game, xPos, yPos, "down") 
+            self._attackLoop = 0 #reset counter
 
     def wallCollision(self, direction): #collision detection
         if direction == "x": 
@@ -354,7 +366,7 @@ class playerAttack(pg.sprite.Sprite):
         self._xChange = 0 
         self._yChange = 0 
         self._movementLoop = 0 
-        self._maxDist = PROJ_DIST 
+        self._maxDist = PPROJ_DIST 
         self._facing = self._game.player._facing 
 
     def update(self): #update attack position
@@ -369,27 +381,84 @@ class playerAttack(pg.sprite.Sprite):
         wallHit = pg.sprite.spritecollide(self, self._game.walls, False) 
         isHit = enemyHit or wallHit 
         if self._facing == "left": 
-            self._xChange -= PROJ_SPEED
+            self._xChange -= PPROJ_SPEED
             self._movementLoop += MOVEMENT_INC 
             if self._movementLoop >= self._maxDist or isHit: 
                 self.kill() 
         if self._facing == "right": 
-            self._xChange += PROJ_SPEED
+            self._xChange += PPROJ_SPEED
             self._movementLoop += MOVEMENT_INC 
             if self._movementLoop >= self._maxDist or isHit: 
                 self.kill() 
         if self._facing == "up": 
-            self._yChange -= PROJ_SPEED
+            self._yChange -= PPROJ_SPEED
             self._movementLoop += MOVEMENT_INC 
             if self._movementLoop >= self._maxDist or isHit: 
                 self.kill() 
         if self._facing == "down": 
-            self._yChange += PROJ_SPEED
+            self._yChange += PPROJ_SPEED
             self._movementLoop += MOVEMENT_INC 
             if self._movementLoop >= self._maxDist or isHit: 
                 self.kill() 
             
+#enemy attack class
+class enemyAttack(pg.sprite.Sprite): 
+    def __init__(self, g, x, y, d):
+        self._game = g 
+        self._layer = ATTACK_LAYER 
+        self._groups = self._game.allSprites, self._game.attacks 
+        pg.sprite.Sprite.__init__(self, self._groups) 
 
+        self._width = ATTACK_SIZE 
+        self._height = ATTACK_SIZE 
+        self._x = x 
+        self._y = y 
+
+        self.image = pg.Surface([self._width, self._height]) 
+        self.image.fill(ORANGE) 
+        # self.image = self._game.attackSheet.getSprite(x, y, width, height)
+
+        self.rect = self.image.get_rect() 
+        self.rect.x = self._x 
+        self.rect.y = self._y 
+
+        self._xChange = 0 
+        self._yChange = 0
+        self._movementLoop = 0 
+        self._maxDist = EPROJ_DIST 
+        self._direction = d 
+
+    def update(self): #update attack position
+        self.movement() 
+        self.rect.x += self._xChange 
+        self.rect.y += self._yChange 
+        self._xChange = 0 
+        self._yChange = 0 
+
+    def movement(self): #how the projectile moves 
+        playerHit = pg.sprite.spritecollide(self, self._game.players, True) 
+        wallHit = pg.sprite.spritecollide(self, self._game.walls, False) 
+        isHit = playerHit or wallHit 
+        if self._direction == "left": 
+            self._xChange -= EPROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+        if self._direction == "right": 
+            self._xChange += EPROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+        if self._direction == "up": 
+            self._yChange -= EPROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
+        if self._direction == "down": 
+            self._yChange += EPROJ_SPEED
+            self._movementLoop += MOVEMENT_INC 
+            if self._movementLoop >= self._maxDist or isHit: 
+                self.kill() 
 
 
 
@@ -400,24 +469,24 @@ class playerAttack(pg.sprite.Sprite):
 tileMap = [
     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     "X................................................X",    
-    "X..E.........X...........................E.......X",
-    "X............X...................X.X.............X",
-    "X....XXXX....X..................X....XX.....XXX..X",
-    "X....X..........................X.E..X.....X..X..X",
-    "X....X.....X.....................XXX..X...X...X..X",
-    "X....X.E...X.......................X..X..X....X..X",
-    "X....XXXXXXX..........X............X..X..X....X..X",
-    "X...................................E.X..X.E..X..X",
-    "X...........P.......X...X..........XXX...........X",
-    "X.......X..............E.........................X",
-    "X........X............X..........................X",
-    "X.........X...........................XXX........XXXXXXXXXXXXXXXXXXXXX",
-    "X...........XXXXX.....E..............................................X",
-    "X.....E.......................X............E.........................XX",
-    "X..........X..E...............X........................................XX",
-    "X..........X..................X........E.................................X",
-    "X..........X......E...........X...........................................XXX",
-    "X............................................................................X",
+    "X..E.........X.....XX...XXX..............E.......X",
+    "X.........E..X.....E.............X.X.............X",
+    "X....XXXX....X.........E........X....XX.....XXX..X",
+    "X....X..........................X.E..X.E...X..X..X",
+    "X....X.....X........E...XXXX.....XXX..X...X.E.X..X",
+    "X....X.E...X...................XE..X..X..X....X..X",
+    "X....XXXXXXX..........X.......XX...X..X..X....X..X",
+    "X.............................X.....E.X..X.E..X..X",
+    "X...........P...X...X...X.....XE...XXX...........X",
+    "X.......X.......X......E......XE.................X",
+    "X........X......X.....X................X...E.....X",
+    "X..XX.....X.....X.E...........XE......XXX........XXXXXXXXXXXXXXXXXXXXX",
+    "X...........XXXXX.....E.......X......X..............X.........X......X",
+    "X.....E.......................XE....X......E........X..E.X....X......XX",
+    "X..........X..E...............X.....X..........X....X....X....X........XX",
+    "X..........X............E.....X....X...E.......X....X....X....D.....X....X",
+    "X..E.......X......E...........X..E..X..........X.......E.X....X.....X.....XXX",
+    "X...................................X..........X..E......X....X.....E........X",
     "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 ] 
 
